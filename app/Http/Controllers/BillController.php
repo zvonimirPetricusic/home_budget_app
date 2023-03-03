@@ -70,8 +70,8 @@ class BillController extends Controller
                     $response = APIHelpers::createAPIResponse(false, 200, 'Bill has been added! User balance has been updated!', null);
                     return response()->json($response, 200);
                 } else{
-                    $response = APIHelpers::createAPIResponse(true, 400, 'Bill has been added! Could not update user balance!', null);
-                    return response()->json($response, 400);
+                    $response = APIHelpers::createAPIResponse(true, 200, 'Bill has been added! Could not update user balance!', null);
+                    return response()->json($response, 200);
                 }
 
             }else{
@@ -114,27 +114,31 @@ class BillController extends Controller
      */
     public function update(Request $request, string $id)
     { 
-
         $bill = Bill::where('id', $id)->first();
         $user = User::where('id', Auth::id())->first();
 
         // Price to be reduced/added to user balance
-        $price = $bill->price - $request['price'];
-
+        if(isset($request['price'])){
+            $price = $bill->price - $request['price'];
+        }
+        
         $updateBill = $bill->update($request->all());
 
         if($updateBill){
-            if($request['price']){
+            if(isset($request['price'])){
                 $updateBalance = User::where('id', Auth::id())->update(['balance' => $user->balance + $price]);
 
                 if($updateBalance){
                     $response = APIHelpers::createAPIResponse(false, 200, 'Bill has been updated! User balance has been updated!', null);
                     return response()->json($response, 200);
                 } else{
-                    $response = APIHelpers::createAPIResponse(true, 400, 'Bill has been updated! Could not update user balance!', null);
-                    return response()->json($response, 400);
+                    $response = APIHelpers::createAPIResponse(true, 200, 'Bill has been updated! Could not update user balance!', null);
+                    return response()->json($response, 200);
                 }
 
+            }else{
+                $response = APIHelpers::createAPIResponse(true, 200, 'Bill has been updated!', null);
+                return response()->json($response, 200);
             }
         }else{
             $response = APIHelpers::createAPIResponse(true, 400, 'Could not update Bill', null);

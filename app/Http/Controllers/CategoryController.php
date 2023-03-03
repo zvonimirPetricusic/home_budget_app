@@ -37,7 +37,7 @@ class CategoryController extends Controller
 
         if($category){
             $response = APIHelpers::createAPIResponse(false, 201, 'Category added!', null);
-            return response()->json($response, 201);
+            return response()->json($response, 200);
         } else{
             $response = APIHelpers::createAPIResponse(true, 400, 'Category could not be added!', null);
             return response()->json($response, 400);
