@@ -8,23 +8,23 @@ use App\Models\User;
 
 class AuthTest extends TestCase
 {
-    public function test_get_login(){
-        $response = $this->post('api/login', [
-            'email' => 'admin@admin.com',
-            'password' => 'admin'
-        ]);
-
-        $response->assertStatus(200);
-    }
-
     public function test_register(){
         $response = $this->post('api/register', [
-            'name' => 'John Doe',
+            'name' => 'Admin',
             'email' => 'admin@admin.com',
-            'password' => bcrypt('admin') 
+            'password' => 'admin' 
         ]);
 
         $response->assertRedirect('/');
+    }
+
+    public function test_get_login(){
+        $response = $this->post('api/login', [
+            'email' => 'admin@admin.com',
+            'password' => 'admin' 
+        ]);
+        
+        $response->assertStatus(200);
     }
 
     public function test_user_dupliciation(){
