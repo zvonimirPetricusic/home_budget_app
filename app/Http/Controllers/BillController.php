@@ -67,10 +67,10 @@ class BillController extends Controller
                 $updateBalance = User::where('id', Auth::id())->update(['balance' => bcsub($user->balance, $params['price'], 2)]);
 
                 if($updateBalance){
-                    $response = APIHelpers::createAPIResponse(false, 200, 'Bill has been added! User balance has been updated!', null);
+                    $response = APIHelpers::createAPIResponse(false, 200, 'Bill has been added! User balance has been updated!', $bill);
                     return response()->json($response, 200);
                 } else{
-                    $response = APIHelpers::createAPIResponse(true, 200, 'Bill has been added! Could not update user balance!', null);
+                    $response = APIHelpers::createAPIResponse(true, 200, 'Bill has been added! Could not update user balance!', $bill);
                     return response()->json($response, 200);
                 }
 
@@ -117,32 +117,37 @@ class BillController extends Controller
         $bill = Bill::where('id', $id)->first();
         $user = User::where('id', Auth::id())->first();
 
-        // Price to be reduced/added to user balance
-        if(isset($request['price'])){
-            $price = $bill->price - $request['price'];
-        }
-        
-        $updateBill = $bill->update($request->all());
-
-        if($updateBill){
+        if($bill){
+            // Price to be reduced/added to user balance
             if(isset($request['price'])){
-                $updateBalance = User::where('id', Auth::id())->update(['balance' => $user->balance + $price]);
+                $price = $bill->price - $request['price'];
+            }
+            
+            $updateBill = $bill->update($request->all());
 
-                if($updateBalance){
-                    $response = APIHelpers::createAPIResponse(false, 200, 'Bill has been updated! User balance has been updated!', null);
-                    return response()->json($response, 200);
-                } else{
-                    $response = APIHelpers::createAPIResponse(true, 200, 'Bill has been updated! Could not update user balance!', null);
+            if($updateBill){
+                if(isset($request['price'])){
+                    $updateBalance = User::where('id', Auth::id())->update(['balance' => $user->balance + $price]);
+
+                    if($updateBalance){
+                        $response = APIHelpers::createAPIResponse(false, 200, 'Bill has been updated! User balance has been updated!', $updateBill);
+                        return response()->json($response, 200);
+                    } else{
+                        $response = APIHelpers::createAPIResponse(true, 200, 'Bill has been updated! Could not update user balance!', $updateBill);
+                        return response()->json($response, 200);
+                    }
+
+                }else{
+                    $response = APIHelpers::createAPIResponse(true, 200, 'Bill has been updated!', null);
                     return response()->json($response, 200);
                 }
-
             }else{
-                $response = APIHelpers::createAPIResponse(true, 200, 'Bill has been updated!', null);
-                return response()->json($response, 200);
+                $response = APIHelpers::createAPIResponse(true, 400, 'Could not update Bill', null);
+                return response()->json($response, 400);
             }
         }else{
-            $response = APIHelpers::createAPIResponse(true, 400, 'Could not update Bill', null);
-            return response()->json($response, 400);
+            $response = APIHelpers::createAPIResponse(true, 404, 'Wrong Id!', null);
+            return response()->json($response, 404);
         }
 
     }
@@ -152,14 +157,22 @@ class BillController extends Controller
      */
     public function destroy(string $id)
     {
-        $bill = Bill::destroy($id);
-
+        
+        $bill = Bill::where('id', $id)->first();
         if($bill){
-            $response = APIHelpers::createAPIResponse(false, 200, 'Bill deleted!', null);
-            return response()->json($response, 200);
-        } else{
-            $response = APIHelpers::createAPIResponse(true, 400, 'Bill could not be deleted!', null);
-            return response()->json($response, 400);
+            $delete = Bill::destroy($id);
+
+            if($delete){
+                $response = APIHelpers::createAPIResponse(false, 200, 'Bill deleted!', $delete);
+                return response()->json($response, 200);
+            } else{
+                $response = APIHelpers::createAPIResponse(true, 400, 'Bill could not be deleted!', null);
+                return response()->json($response, 400);
+            }
+
+        }else{
+            $response = APIHelpers::createAPIResponse(true, 404, 'Wrong Id!', null);
+            return response()->json($response, 404);
         }
     }
 

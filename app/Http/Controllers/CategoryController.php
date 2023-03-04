@@ -36,7 +36,7 @@ class CategoryController extends Controller
         ]);
 
         if($category){
-            $response = APIHelpers::createAPIResponse(false, 201, 'Category added!', null);
+            $response = APIHelpers::createAPIResponse(false, 201, 'Category added!', $category);
             return response()->json($response, 200);
         } else{
             $response = APIHelpers::createAPIResponse(true, 400, 'Category could not be added!', null);
@@ -61,14 +61,21 @@ class CategoryController extends Controller
     public function update(Request $request, string $id)
     {
         $category = Category::find($id);
-        $category->update($request->all());
         if($category){
-            $response = APIHelpers::createAPIResponse(false, 200, 'Category updated!', null);
-            return response()->json($response, 200);
-        } else{
-            $response = APIHelpers::createAPIResponse(true, 400, 'Category could not be updated!', null);
-            return response()->json($response, 400);
+            $update = $category->update($request->all());
+
+            if($update){
+                $response = APIHelpers::createAPIResponse(false, 200, 'Category updated!', $update);
+                return response()->json($response, 200);
+            } else{
+                $response = APIHelpers::createAPIResponse(true, 400, 'Category could not be updated!', null);
+                return response()->json($response, 400);
+            }
+        }else{
+            $response = APIHelpers::createAPIResponse(true, 404, 'Wrong Id!', null);
+            return response()->json($response, 404);
         }
+        
     }
 
     /**
@@ -76,15 +83,22 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        $category = Category::destroy($id);
+        $category = Category::find($id);
 
         if($category){
-            $response = APIHelpers::createAPIResponse(false, 200, 'Category deleted!', null);
-            return response()->json($response, 200);
-        } else{
-            $response = APIHelpers::createAPIResponse(true, 400, 'Category could not be deleted!', null);
-            return response()->json($response, 400);
+            $delete = Category::destroy($id);
+            if($delete){
+                $response = APIHelpers::createAPIResponse(false, 200, 'Category deleted!', $delete);
+                return response()->json($response, 200);
+            } else{
+                $response = APIHelpers::createAPIResponse(true, 400, 'Category could not be deleted!', null);
+                return response()->json($response, 400);
+            }
+        }else{
+            $response = APIHelpers::createAPIResponse(true, 404, 'Wrong Id!', null);
+            return response()->json($response, 404);
         }
+
     }
 
     /**

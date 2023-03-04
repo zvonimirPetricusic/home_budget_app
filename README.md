@@ -8,3 +8,6 @@
 8) php artisan serve
 9) When using Postman don't forget to update User Token Variable when you Register/Login
 10) use API documentation for further instructions
+
+POSTMAN API DOCUMENTATION CAN BE FOUND AT
+https://documenter.getpostman.com/view/16768666/2s93JnUmSw

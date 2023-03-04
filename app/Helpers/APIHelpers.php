@@ -46,7 +46,9 @@ class APIHelpers {
                 case 'category_id' :
                     $where[$count] = ['category_id', $value];
                     $category = Category::where('id', $value)->first();
-                    $data['category'] = $category->name;
+                    if($category){
+                        $data['category'] = $category->name;
+                    }
                     break ;
              }
 
